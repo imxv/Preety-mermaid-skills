@@ -1,5 +1,5 @@
 ---
-name: beautiful-mermaid
+name: pretty-mermaid
 description: |
   Render beautiful Mermaid diagrams as SVG or ASCII art using the beautiful-mermaid library.
   Supports 15+ themes, 5 diagram types (flowchart, sequence, state, class, ER), and ultra-fast rendering.
@@ -13,7 +13,7 @@ description: |
   6. User wants to visualize architecture, workflows, or data models
 ---
 
-# Beautiful Mermaid
+# Pretty Mermaid
 
 Render stunning, professionally-styled Mermaid diagrams with one command. Supports SVG for web/docs and ASCII for terminals.
 
@@ -442,7 +442,7 @@ Error: Cannot find module 'beautiful-mermaid'
 ```
 **Note:** This should auto-install on first run. If it fails:
 ```bash
-cd /path/to/beautiful-mermaid-skill && npm install
+cd /path/to/pretty-mermaid-skill && npm install
 ```
 
 ### Invalid Mermaid Syntax

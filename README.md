@@ -1,4 +1,4 @@
-# Preety-Mermaid Skills
+# Pretty-Mermaid Skills
 
 ## 简介
 为 AI 提供的 Mermaid 图表渲染 Skill，支持 SVG 和 ASCII 双格式输出，让您的文档更加生动。
