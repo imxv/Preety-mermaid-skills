@@ -21,6 +21,17 @@
 | solarized-light | github-dark | |
 | | solarized-dark | |
 
+## 🤖 AI 助手集成
+
+支持与以下 AI 编程环境无缝集成，通过自然语言即可调用绘图能力：
+
+- **Claude Code**
+- **Cursor**
+- **Gemini CLI**
+- **Antigravity**
+- **OpenCode**
+- **Codex**
+
 ## 🚀 安装步骤
 
 ### 一键安装
