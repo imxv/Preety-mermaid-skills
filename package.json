@@ -1,0 +1,14 @@
+{
+  "name": "beautiful-mermaid-skill",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "render-mermaid": "./scripts/render.mjs",
+    "batch-mermaid": "./scripts/batch.mjs",
+    "list-mermaid-themes": "./scripts/themes.mjs"
+  },
+  "dependencies": {
+    "beautiful-mermaid": "^0.1.3"
+  }
+}

@@ -23,7 +23,7 @@ Render stunning, professionally-styled Mermaid diagrams with one command. Suppor
 
 **From a file:**
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input diagram.mmd \
   --output diagram.svg \
   --format svg \
@@ -37,7 +37,7 @@ python scripts/render_mermaid.py \
 ### Batch Render Multiple Diagrams
 
 ```bash
-python scripts/batch_render.py \
+node scripts/batch.mjs \
   --input-dir ./diagrams \
   --output-dir ./output \
   --format svg \
@@ -48,7 +48,7 @@ python scripts/batch_render.py \
 ### ASCII Output (Terminal-Friendly)
 
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input diagram.mmd \
   --format ascii \
   --use-ascii
@@ -72,7 +72,7 @@ python scripts/render_mermaid.py \
 - **Dark mode docs** → `tokyo-night` (recommended)
 - **Light mode docs** → `github-light`
 - **Vibrant colors** → `dracula`
-- **See all themes** → Run `python scripts/list_themes.py`
+- **See all themes** → Run `node scripts/themes.mjs`
 
 ---
 
@@ -92,7 +92,7 @@ When user provides a `.mmd` file or Mermaid code block:
 
 2. **Render with theme**:
    ```bash
-   python scripts/render_mermaid.py \
+   node scripts/render.mjs \
      --input diagram.mmd \
      --output diagram.svg \
      --theme tokyo-night
@@ -122,7 +122,7 @@ When user provides a `.mmd` file or Mermaid code block:
 
 **Custom Colors** (overrides theme):
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input diagram.mmd \
   --bg "#1a1b26" \
   --fg "#a9b1d6" \
@@ -132,7 +132,7 @@ python scripts/render_mermaid.py \
 
 **Transparent Background**:
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input diagram.mmd \
   --transparent \
   --output transparent.svg
@@ -140,7 +140,7 @@ python scripts/render_mermaid.py \
 
 **Custom Font**:
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input diagram.mmd \
   --font "JetBrains Mono" \
   --output custom-font.svg
@@ -166,7 +166,7 @@ cp assets/example_diagrams/flowchart.mmd my-workflow.mmd
 
 **Step 3: Render**
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input my-workflow.mmd \
   --output my-workflow.svg \
   --theme github-dark
@@ -233,7 +233,7 @@ EOF
 
 **Step 3: Render and iterate**
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input user-diagram.mmd \
   --output preview.svg \
   --theme tokyo-night
@@ -248,7 +248,7 @@ python scripts/render_mermaid.py \
 ### List Available Themes
 
 ```bash
-python scripts/list_themes.py
+node scripts/themes.mjs
 ```
 
 **Output:**
@@ -292,7 +292,7 @@ Total: 15 themes
 ### Apply Theme to Diagram
 
 ```bash
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input diagram.mmd \
   --output themed.svg \
   --theme tokyo-night
@@ -303,7 +303,7 @@ python scripts/render_mermaid.py \
 Render the same diagram with multiple themes:
 ```bash
 for theme in tokyo-night dracula github-dark; do
-  python scripts/render_mermaid.py \
+  node scripts/render.mjs \
     --input diagram.mmd \
     --output "diagram-${theme}.svg" \
     --theme "$theme"
@@ -326,7 +326,7 @@ diagrams/
 
 **Step 2: Batch render**
 ```bash
-python scripts/batch_render.py \
+node scripts/batch.mjs \
   --input-dir ./diagrams \
   --output-dir ./rendered \
   --format svg \
@@ -349,14 +349,14 @@ Found 3 diagram(s) to render...
 Render both SVG and ASCII:
 ```bash
 # SVG for docs
-python scripts/batch_render.py \
+node scripts/batch.mjs \
   --input-dir ./diagrams \
   --output-dir ./svg \
   --format svg \
   --theme github-dark
 
 # ASCII for README
-python scripts/batch_render.py \
+node scripts/batch.mjs \
   --input-dir ./diagrams \
   --output-dir ./ascii \
   --format ascii \
@@ -379,7 +379,7 @@ python scripts/batch_render.py \
 # → Create flowchart.mmd
 # → Render with professional theme
 
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input architecture.mmd \
   --output docs/architecture.svg \
   --theme github-dark \
@@ -393,7 +393,7 @@ python scripts/render_mermaid.py \
 # → Create sequence.mmd
 # → Render with clear theme
 
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input api-flow.mmd \
   --output api-sequence.svg \
   --theme tokyo-night
@@ -406,7 +406,7 @@ python scripts/render_mermaid.py \
 # → Create er.mmd
 # → Render for database docs
 
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input schema.mmd \
   --output database-schema.svg \
   --theme dracula
@@ -416,7 +416,7 @@ python scripts/render_mermaid.py \
 
 ```bash
 # For README or terminal display
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input workflow.mmd \
   --format ascii \
   --use-ascii > workflow.txt
@@ -426,7 +426,7 @@ python scripts/render_mermaid.py \
 
 ```bash
 # High-contrast for projectors
-python scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input slides-diagram.mmd \
   --output presentation.svg \
   --theme zinc-light
@@ -436,19 +436,13 @@ python scripts/render_mermaid.py \
 
 ## Troubleshooting
 
-### Node.js Not Found
-```
-Error: Node.js not found. Please install Node.js to use this tool.
-```
-**Solution:** Install Node.js from https://nodejs.org/
-
 ### beautiful-mermaid Not Installed
 ```
 Error: Cannot find module 'beautiful-mermaid'
 ```
-**Solution:**
+**Note:** This should auto-install on first run. If it fails:
 ```bash
-npm install -g beautiful-mermaid
+cd /path/to/beautiful-mermaid-skill && npm install
 ```
 
 ### Invalid Mermaid Syntax
@@ -474,11 +468,10 @@ Error: Input file not found: diagram.mmd
 ## Resources
 
 ### scripts/
-Executable Python and Node.js scripts for rendering operations:
-- `render_mermaid.py` - Main rendering script
-- `batch_render.py` - Batch processing script
-- `list_themes.py` - Theme listing utility
-- `render_helper.mjs` - Node.js bridge to beautiful-mermaid
+Executable Node.js scripts for rendering operations:
+- `render.mjs` - Main rendering script
+- `batch.mjs` - Batch processing script
+- `themes.mjs` - Theme listing utility
 
 ### references/
 Documentation to inform diagram creation:

@@ -1,49 +1,68 @@
-# Beautiful-Mermaid Skill for Claude
+# Beautiful-Mermaid Skills
 
 ## 简介
 为 Claude AI 提供的 Mermaid 图表渲染 Skill，支持 SVG 和 ASCII 双格式输出。
 
 ## 功能特性
-- 📊 SVG 和 ASCII 渲染
-- 🎨 14 个精美主题（tokyo-night, dracula, github-dark...）
-- 📈 5 种图表类型（Flowchart, Sequence, State, Class, ER）
-- ⚡ 批量并行渲染
+- 📊 支持 SVG 和 ASCII 渲染导出
+- 🎨 15 种主题选择（zinc-light
+
+zinc-dark
+
+tokyo-night
+
+tokyo-night-storm
+
+tokyo-night-light
+
+cappuccin-mocha
+
+cappuccin-latte
+
+nord
+
+nord-light
+
+dracula
+
+github-light
+
+github-dark
+
+solarized-light
+
+solarized-dark
+
+one-dark）
+- 📈 支持 5 种图表类型（Flowchart, Sequence, State, Class, ER）
+- ⚡ 支持批量并行渲染
 - 📚 完整的模板和文档
 
 ## 安装步骤
 
-### 1. 安装到 Claude Skills 目录
+### 1. 安装到 Skills 目录
 ```bash
-cd ~/.claude/skills
-git clone https://github.com/[用户名]/beautiful-mermaid.git
+npx skills add https://github.com/intellectronica/agent-skills --skill Pretty-mermaid
 ```
 
-### 2. 安装依赖
-```bash
-# 安装 Node.js（如果未安装）
-# macOS: brew install node
-# Ubuntu: sudo apt install nodejs npm
-
-# 安装 beautiful-mermaid
-npm install -g beautiful-mermaid
-```
-
-### 3. 验证安装
+### 2. 验证安装
 ```bash
 cd beautiful-mermaid
-python3 scripts/list_themes.py
+node scripts/themes.mjs
 ```
+
+> **首次运行时会自动安装依赖，只需 Node.js 环境。**
 
 ## 快速开始
 
 ### 列出可用主题
 ```bash
-python3 scripts/list_themes.py
+node scripts/themes.mjs
 ```
 
 ### 渲染单个图表
 ```bash
-python3 scripts/render_mermaid.py \
+node scripts/render.mjs \
   --input diagram.mmd \
   --output output.svg \
   --theme tokyo-night
@@ -51,7 +70,7 @@ python3 scripts/render_mermaid.py \
 
 ### 批量渲染
 ```bash
-python3 scripts/batch_render.py \
+node scripts/batch.mjs \
   --input-dir ./diagrams \
   --output-dir ./output \
   --theme dracula
@@ -72,9 +91,7 @@ python3 scripts/batch_render.py \
 
 ## 系统要求
 
-- Python 3.7+
 - Node.js 14+
-- npm 或 yarn
 
 ## 许可证
 
