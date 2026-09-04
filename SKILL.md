@@ -25,10 +25,18 @@ Treat the directory containing this file as `<skill-root>`. Run bundled scripts 
 3. Read only the relevant reference file when syntax, theme selection, or API behavior needs more detail.
 4. Save new source as a `.mmd` file, preserving user terminology and relationships.
 5. Render with a named theme or explicit colors.
-6. Inspect the result. Fix syntax, clipping, crowded layout, or unclear labels and render again.
+6. Check the CLI error output; fix syntax, labels, or spacing and render again.
 7. Return the source and output paths, plus the selected format and theme.
 
 Do not overwrite an existing source or output file unless the user asked for replacement.
+
+## Output discipline
+
+Rendered files stay on disk; only paths and receipts travel through the conversation.
+
+- Pass `--output <file>` on every render to place the file deliberately; omitting it writes `<input>.svg`/`.txt`/`.png` beside the source. Nothing is ever printed to stdout.
+- Probe output with cheap commands (`wc -c`, `head -c 20`); never `cat` a rendered file.
+- Visual inspection is the user's: hand back the file path; for a terminal preview, suggest `cat <file>`.
 
 ## Choose a diagram type
 
@@ -173,9 +181,9 @@ Run `node scripts/render.mjs --help` or `node scripts/batch.mjs --help` for the 
 
 After rendering:
 
-1. Confirm the command exits successfully and the output file is non-empty.
-2. Confirm SVG output begins with `<svg`; confirm PNG output opens as a valid image; confirm text output contains visible diagram content.
-3. Inspect visual output when layout matters, especially long labels, CJK text, disconnected components, and XY charts.
+1. Confirm the command exits successfully and the output file is non-empty: `wc -c <file>`.
+2. Probe structure only: SVG starts with `<svg` (`head -c 20 <file>`); PNG is a valid image (`file <file>`); text output shows diagram content in its first lines (`head -n 5 <file>`).
+3. Leave visual inspection to the user when layout matters — long labels, CJK text, disconnected components, XY charts — by reporting the output path.
 4. Confirm arrows, cardinalities, states, and labels match the source request.
 5. Report any renderer limitation instead of silently dropping unsupported syntax.
 
