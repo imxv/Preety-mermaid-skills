@@ -181,15 +181,25 @@ Options:
   return opts;
 }
 
+function writeRendered(outputPath, content, force) {
+  // 'wx' = exclusive create: the no-overwrite check and the write are one atomic
+  // step, so a concurrent process cannot slip a file into the TOCTOU window.
+  try {
+    writeFileSync(outputPath, content, { flag: force ? 'w' : 'wx' });
+  } catch (e) {
+    if (e.code === 'EEXIST') {
+      throw new Error(`Output file already exists: ${outputPath} (pass --force to replace)`);
+    }
+    throw e;
+  }
+}
+
 async function renderFile(file, inputDir, outputDir, opts, lib) {
   const { renderMermaidSVG, renderMermaidASCII, THEMES } = lib;
   const inputPath = join(inputDir, file);
   const ext = opts.format === 'svg' ? '.svg' : opts.format === 'png' ? '.png' : '.txt';
   const outputPath = join(outputDir, file.replace(/\.mmd$/, ext));
   const input = readFileSync(inputPath, 'utf8');
-  if (existsSync(outputPath) && !opts.force) {
-    throw new Error(`Output file already exists: ${outputPath} (pass --force to replace)`);
-  }
   const theme = opts.theme ? THEMES[opts.theme] : undefined;
   const customColors = {
     ...(opts.bg && { bg: opts.bg }),
@@ -209,7 +219,7 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
       colorMode: opts.colorMode,
       theme: toAsciiTheme(asciiColors),
     });
-    writeFileSync(outputPath, ascii);
+    writeRendered(outputPath, ascii, opts.force);
   } else {
     const colors = theme || {
       ...(opts.bg && { bg: opts.bg }),
@@ -231,7 +241,7 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
       componentSpacing: opts.componentSpacing,
       interactive: opts.interactive,
     });
-    writeFileSync(outputPath, opts.format === 'png' ? renderSvgToPng(svg, opts.width) : svg);
+    writeRendered(outputPath, opts.format === 'png' ? renderSvgToPng(svg, opts.width) : svg, opts.force);
   }
 }
 

@@ -175,10 +175,16 @@ function defaultOutputPath(input, ext) {
 }
 
 function writeRendered(outputPath, content, force) {
-  if (existsSync(outputPath) && !force) {
-    throw new Error(`Output file already exists: ${outputPath} (pass --force to replace)`);
+  // 'wx' = exclusive create: the no-overwrite check and the write are one atomic
+  // step, so a concurrent process cannot slip a file into the TOCTOU window.
+  try {
+    writeFileSync(outputPath, content, { flag: force ? 'w' : 'wx' });
+  } catch (e) {
+    if (e.code === 'EEXIST') {
+      throw new Error(`Output file already exists: ${outputPath} (pass --force to replace)`);
+    }
+    throw e;
   }
-  writeFileSync(outputPath, content);
 }
 
 async function main() {
