@@ -84,6 +84,7 @@ function parseArgs() {
     layerSpacing: 40,
     componentSpacing: 24,
     interactive: false,
+    force: false,
     workers: 4,
     width: DEFAULT_PNG_WIDTH,
   };
@@ -116,6 +117,7 @@ function parseArgs() {
       case '--layer-spacing': opts.layerSpacing = parseInt(val); i++; break;
       case '--component-spacing': opts.componentSpacing = parseInt(val); i++; break;
       case '--interactive': opts.interactive = true; break;
+      case '--force': opts.force = true; break;
       case '--workers': case '-w': opts.workers = parseInt(val); i++; break;
       case '--width':
         if (val === undefined) throw new Error('--width requires a value.');
@@ -126,6 +128,7 @@ function parseArgs() {
 Options:
   -i, --input-dir <dir>    Input directory containing .mmd files [required]
   -o, --output-dir <dir>   Output directory for rendered files [required]
+      --force              Overwrite existing output files (default: refuse)
   -f, --format <fmt>       Output format: svg | png | ascii (default: svg)
   -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)
       --bg <hex>           Background color
@@ -178,6 +181,19 @@ Options:
   return opts;
 }
 
+function writeRendered(outputPath, content, force) {
+  // 'wx' = exclusive create: the no-overwrite check and the write are one atomic
+  // step, so a concurrent process cannot slip a file into the TOCTOU window.
+  try {
+    writeFileSync(outputPath, content, { flag: force ? 'w' : 'wx' });
+  } catch (e) {
+    if (e.code === 'EEXIST') {
+      throw new Error(`Output file already exists: ${outputPath} (pass --force to replace)`);
+    }
+    throw e;
+  }
+}
+
 async function renderFile(file, inputDir, outputDir, opts, lib) {
   const { renderMermaidSVG, renderMermaidASCII, THEMES } = lib;
   const inputPath = join(inputDir, file);
@@ -203,7 +219,7 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
       colorMode: opts.colorMode,
       theme: toAsciiTheme(asciiColors),
     });
-    writeFileSync(outputPath, ascii);
+    writeRendered(outputPath, ascii, opts.force);
   } else {
     const colors = theme || {
       ...(opts.bg && { bg: opts.bg }),
@@ -225,7 +241,7 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
       componentSpacing: opts.componentSpacing,
       interactive: opts.interactive,
     });
-    writeFileSync(outputPath, opts.format === 'png' ? renderSvgToPng(svg, opts.width) : svg);
+    writeRendered(outputPath, opts.format === 'png' ? renderSvgToPng(svg, opts.width) : svg, opts.force);
   }
 }
 

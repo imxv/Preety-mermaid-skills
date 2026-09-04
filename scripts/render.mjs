@@ -63,6 +63,7 @@ function parseArgs() {
   const opts = {
     input: null,
     output: null,
+    force: false,
     format: 'svg',
     theme: null,
     bg: null,
@@ -100,6 +101,7 @@ function parseArgs() {
       case '--border': opts.border = val; i++; break;
       case '--font': opts.font = val; i++; break;
       case '--transparent': opts.transparent = true; break;
+      case '--force': opts.force = true; break;
       case '--use-ascii': opts.useAscii = true; break;
       case '--padding-x': opts.paddingX = parseInt(val); i++; break;
       case '--padding-y': opts.paddingY = parseInt(val); i++; break;
@@ -118,7 +120,8 @@ function parseArgs() {
 
 Options:
   -i, --input <file>       Input Mermaid file (.mmd) [required]
-  -o, --output <file>      Output file (default: stdout; input.png for PNG)
+  -o, --output <file>      Output file (default: <input>.svg/.txt/.png by format)
+      --force              Overwrite existing output files (default: refuse)
   -f, --format <fmt>       Output format: svg | png | ascii (default: svg)
   -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)
       --bg <hex>           Background color
@@ -167,6 +170,23 @@ Options:
   return opts;
 }
 
+function defaultOutputPath(input, ext) {
+  return /\.mmd$/i.test(input) ? input.replace(/\.mmd$/i, `.${ext}`) : `${input}.${ext}`;
+}
+
+function writeRendered(outputPath, content, force) {
+  // 'wx' = exclusive create: the no-overwrite check and the write are one atomic
+  // step, so a concurrent process cannot slip a file into the TOCTOU window.
+  try {
+    writeFileSync(outputPath, content, { flag: force ? 'w' : 'wx' });
+  } catch (e) {
+    if (e.code === 'EEXIST') {
+      throw new Error(`Output file already exists: ${outputPath} (pass --force to replace)`);
+    }
+    throw e;
+  }
+}
+
 async function main() {
   const opts = parseArgs();
   const { renderMermaidSVG, renderMermaidASCII, THEMES } = await loadBeautifulMermaid();
@@ -194,12 +214,9 @@ async function main() {
       colorMode: opts.colorMode,
       theme: toAsciiTheme(asciiColors),
     });
-    if (opts.output) {
-      writeFileSync(opts.output, ascii);
-      console.log(`ASCII diagram saved to ${opts.output}`);
-    } else {
-      console.log(ascii);
-    }
+    const outputPath = opts.output || defaultOutputPath(opts.input, 'txt');
+    writeRendered(outputPath, ascii, opts.force);
+    console.log(`ASCII diagram saved to ${outputPath}`);
   } else {
     const colors = theme || {
       bg: opts.bg ?? '#FFFFFF',
@@ -222,18 +239,11 @@ async function main() {
       interactive: opts.interactive,
     });
 
-    if (opts.format === 'png') {
-      const outputPath = opts.output || (
-        /\.mmd$/i.test(opts.input) ? opts.input.replace(/\.mmd$/i, '.png') : `${opts.input}.png`
-      );
-      writeFileSync(outputPath, renderSvgToPng(svg, opts.width));
-      console.log(`PNG diagram saved to ${outputPath}`);
-    } else if (opts.output) {
-      writeFileSync(opts.output, svg);
-      console.log(`SVG diagram saved to ${opts.output}`);
-    } else {
-      console.log(svg);
-    }
+    const ext = opts.format === 'png' ? 'png' : 'svg';
+    const outputPath = opts.output || defaultOutputPath(opts.input, ext);
+    const content = opts.format === 'png' ? renderSvgToPng(svg, opts.width) : svg;
+    writeRendered(outputPath, content, opts.force);
+    console.log(`${opts.format.toUpperCase()} diagram saved to ${outputPath}`);
   }
 }
 
