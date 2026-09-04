@@ -230,8 +230,39 @@ try {
   for (const colorCode of customColorCodes) {
     assert.ok(batchCustomAscii.includes(colorCode), `batch.mjs omitted custom ASCII color ${colorCode}`);
   }
+  const guardPath = join(cliTestDir, 'overwrite-guard.svg');
+  const guardFirstRender = spawnSync(process.execPath, [
+    join(scriptsDir, 'render.mjs'),
+    '--input', flowchartPath,
+    '--output', guardPath,
+  ], { encoding: 'utf8' });
+  assert.equal(guardFirstRender.status, 0, guardFirstRender.stderr);
+
+  const guardRerunResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'render.mjs'),
+    '--input', flowchartPath,
+    '--output', guardPath,
+  ], { encoding: 'utf8' });
+  assert.notEqual(guardRerunResult.status, 0, 'render.mjs overwrote an existing output without --force');
+  assert.match(guardRerunResult.stderr, /already exists/);
+
+  const guardSourceResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'render.mjs'),
+    '--input', flowchartPath,
+    '--output', flowchartPath,
+  ], { encoding: 'utf8' });
+  assert.notEqual(guardSourceResult.status, 0, 'render.mjs overwrote the input file without --force');
+  assert.match(guardSourceResult.stderr, /already exists/);
+
+  const guardForceResult = spawnSync(process.execPath, [
+    join(scriptsDir, 'render.mjs'),
+    '--input', flowchartPath,
+    '--output', guardPath,
+    '--force',
+  ], { encoding: 'utf8' });
+  assert.equal(guardForceResult.status, 0, guardForceResult.stderr);
 } finally {
   rmSync(cliTestDir, { recursive: true, force: true });
 }
 
-console.log(`Smoke tests passed: ${files.length} diagrams x 3 formats, 15 themes, CLI named/custom colors and interactive coverage.`);
+console.log(`Smoke tests passed: ${files.length} diagrams x 3 formats, 15 themes, CLI named/custom colors, interactive coverage, overwrite guard.`);

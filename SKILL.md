@@ -28,15 +28,16 @@ Treat the directory containing this file as `<skill-root>`. Run bundled scripts 
 6. Check the CLI error output; fix syntax, labels, or spacing and render again.
 7. Return the source and output paths, plus the selected format and theme.
 
-Do not overwrite an existing source or output file unless the user asked for replacement.
+Do not overwrite an existing source or output file unless the user asked for replacement (the CLI refuses unless `--force` is passed).
 
 ## Output discipline
 
 Rendered files stay on disk; only paths and receipts travel through the conversation.
 
-- Pass `--output <file>` on every render to place the file deliberately; omitting it writes `<input>.svg`/`.txt`/`.png` beside the source. Nothing is ever printed to stdout.
-- Probe output with cheap commands (`wc -c`, `head -c 20`); never `cat` a rendered file.
-- Visual inspection is the user's: hand back the file path; for a terminal preview, suggest `cat <file>`.
+- Pass `--output <file>` on every render to place the file deliberately; omitting it writes `<input>.svg`/`.txt`/`.png` beside the source. Rendered content is never printed to stdout — the CLI only reports the saved path.
+- Existing output files are refused by default; pass `--force` only when the user asked for replacement.
+- Probe output with cheap commands (`wc -c`, `head -c 20`) instead of dumping rendered files.
+- Visual inspection is the user's: hand back the file path.
 
 ## Choose a diagram type
 
