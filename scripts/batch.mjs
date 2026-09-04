@@ -84,6 +84,7 @@ function parseArgs() {
     layerSpacing: 40,
     componentSpacing: 24,
     interactive: false,
+    force: false,
     workers: 4,
     width: DEFAULT_PNG_WIDTH,
   };
@@ -116,6 +117,7 @@ function parseArgs() {
       case '--layer-spacing': opts.layerSpacing = parseInt(val); i++; break;
       case '--component-spacing': opts.componentSpacing = parseInt(val); i++; break;
       case '--interactive': opts.interactive = true; break;
+      case '--force': opts.force = true; break;
       case '--workers': case '-w': opts.workers = parseInt(val); i++; break;
       case '--width':
         if (val === undefined) throw new Error('--width requires a value.');
@@ -126,6 +128,7 @@ function parseArgs() {
 Options:
   -i, --input-dir <dir>    Input directory containing .mmd files [required]
   -o, --output-dir <dir>   Output directory for rendered files [required]
+      --force              Overwrite existing output files (default: refuse)
   -f, --format <fmt>       Output format: svg | png | ascii (default: svg)
   -t, --theme <name>       Theme name (e.g. tokyo-night, dracula)
       --bg <hex>           Background color
@@ -184,6 +187,9 @@ async function renderFile(file, inputDir, outputDir, opts, lib) {
   const ext = opts.format === 'svg' ? '.svg' : opts.format === 'png' ? '.png' : '.txt';
   const outputPath = join(outputDir, file.replace(/\.mmd$/, ext));
   const input = readFileSync(inputPath, 'utf8');
+  if (existsSync(outputPath) && !opts.force) {
+    throw new Error(`Output file already exists: ${outputPath} (pass --force to replace)`);
+  }
   const theme = opts.theme ? THEMES[opts.theme] : undefined;
   const customColors = {
     ...(opts.bg && { bg: opts.bg }),

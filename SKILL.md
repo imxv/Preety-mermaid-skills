@@ -23,7 +23,7 @@ Treat the directory containing this file as `<skill-root>`. Run bundled scripts 
 1. Determine whether the user supplied Mermaid source or needs a diagram authored from prose.
 2. Choose the diagram type and output format from the tables below.
 3. Read only the relevant reference file when syntax, theme selection, or API behavior needs more detail.
-4. Save new source as a `.mmd` file, preserving user terminology and relationships.
+4. Save new source as a `.mmd` file, preserving user terminology and relationships. For non-trivial syntax, consult `references/DIAGRAM_TYPES.md` before saving to avoid render-retry loops.
 5. Render with a named theme or explicit colors.
 6. Check the CLI error output; fix syntax, labels, or spacing and render again.
 7. Return the source and output paths, plus the selected format and theme.
@@ -37,6 +37,7 @@ Rendered files stay on disk; only paths and receipts travel through the conversa
 - Pass `--output <file>` on every render to place the file deliberately; omitting it writes `<input>.svg`/`.txt`/`.png` beside the source. Rendered content is never printed to stdout — the CLI only reports the saved path.
 - Existing output files are refused by default; pass `--force` only when the user asked for replacement.
 - Probe output with cheap commands (`wc -c`, `head -c 20`) instead of dumping rendered files.
+- Re-render the same diagram at most twice; if it still fails, report the renderer limitation (see Validation) instead of continuing to retry.
 - Visual inspection is the user's: hand back the file path.
 
 ## Choose a diagram type
@@ -125,7 +126,7 @@ Use batch rendering for three or more diagrams or when consistent options must b
 - High-contrast color: `dracula`
 - Cool, restrained palette: `nord`, `nord-light`
 
-Read `references/THEMES.md` or open `docs/THEME_GALLERY.md` when visual theme choice matters. A named theme can be refined with explicit color flags.
+Read `references/THEMES.md` or open `docs/THEME_GALLERY.md` when visual theme choice matters. A named theme can be refined with explicit color flags. When the task does not specify a theme, use the first suitable recommendation above instead of sampling multiple themes.
 
 ## Useful options
 
